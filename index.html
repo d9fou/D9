@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-  document.write('<link href="css/style.css?v=' + Date.now() + '" rel="stylesheet">');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="DAVID FOUAD - Creative Social Media Manager specializing in content creation, campaign strategy, and digital production">
@@ -12,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/stevenschobert/instafeed.js@2.0.0rc1/dist/instafeed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <style>
         :root {
             --primary: #606060;
@@ -20,6 +19,17 @@
             --dark: #2E2E2E;
             --light: #F8F8F8;
             --gray: #333333;
+            --bg-color: #ffffff;
+            --text-color: #2E2E2E;
+        }
+
+        .dark-mode {
+            --primary: #D6ED17;
+            --dark: #F5FFFA;
+            --accent: #606060;
+            --bg-color: #121212;
+            --text-color: #F5FFFA;
+            --light: #1E1E1E;
         }
         
         * {
@@ -31,9 +41,10 @@
         body {
             font-family: 'Poppins', sans-serif;
             line-height: 1.7;
-            color: var(--dark);
-            background-color: #ffffff;
+            color: var(--text-color);
+            background-color: var(--bg-color);
             overflow-x: hidden;
+            transition: all 0.3s ease;
         }
         
         .container {
@@ -41,6 +52,80 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 4px;
+            background: var(--secondary);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+            width: 0%;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 99;
+        }
+
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 99;
+            border: none;
+            outline: none;
+        }
+
+        /* PDF Download Button */
+        .pdf-btn {
+            position: fixed;
+            bottom: 150px;
+            right: 30px;
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 12px 15px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         /* Header Styles */
@@ -60,7 +145,7 @@
             left: 0;
             width: 100%;
             height: 100px;
-            background: white;
+            background: var(--bg-color);
             transform: skewY(-3deg);
             z-index: 1;
         }
@@ -150,12 +235,13 @@
         }
         
         .project-card {
-            background: white;
+            background: var(--bg-color);
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             overflow: hidden;
             transition: all 0.3s ease;
             position: relative;
+            border: 1px solid rgba(0,0,0,0.1);
         }
         
         .project-card:hover {
@@ -167,6 +253,11 @@
             height: 200px;
             width: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover .project-img {
+            transform: scale(1.05);
         }
         
         .project-info {
@@ -176,7 +267,7 @@
         .project-info h3 {
             font-size: 1.4rem;
             margin-bottom: 15px;
-            color: var(--dark);
+            color: var(--text-color);
         }
         
         .project-info p {
@@ -192,7 +283,7 @@
         }
         
         .tag {
-            background: rgba(67, 97, 238, 0.1);
+            background: rgba(214, 237, 23, 0.2);
             color: var(--primary);
             padding: 5px 15px;
             border-radius: 50px;
@@ -233,7 +324,7 @@
         }
         
         .skill-category {
-            background: white;
+            background: var(--bg-color);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
@@ -271,6 +362,63 @@
             left: 0;
             top: -5px;
         }
+
+        /* Testimonials Section */
+        #testimonials {
+            background-color: var(--bg-color);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: var(--light);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+
+        .testimonial-card h4 {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Instagram Feed */
+        .instagram-feed {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .instagram-feed a {
+            display: block;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .instagram-feed a:hover {
+            transform: scale(1.05);
+        }
+
+        .instagram-feed img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
         
         /* Experience Section */
         .timeline {
@@ -297,7 +445,7 @@
         }
         
         .timeline-content {
-            background: white;
+            background: var(--bg-color);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
@@ -317,7 +465,7 @@
             height: 20px;
             border-radius: 50%;
             background: var(--accent);
-            border: 4px solid white;
+            border: 4px solid var(--bg-color);
             box-shadow: 0 0 0 4px var(--accent);
         }
         
@@ -367,6 +515,34 @@
         
         .timeline-content ul li {
             margin-bottom: 8px;
+        }
+        
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .stat-card {
+            background: var(--bg-color);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 1rem;
         }
         
         /* Contact Section */
@@ -423,7 +599,7 @@
         }
         
         .contact-form {
-            background: white;
+            background: var(--bg-color);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
@@ -448,13 +624,15 @@
             border-radius: 5px;
             font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
+            background-color: var(--light);
+            color: var(--text-color);
         }
         
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 0 0 3px rgba(214, 237, 23, 0.2);
         }
         
         .submit-btn {
@@ -471,12 +649,12 @@
         .submit-btn:hover {
             background: var(--secondary);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+            box-shadow: 0 5px 15px rgba(214, 237, 23, 0.3);
         }
         
         /* Footer */
         footer {
-            background: var(--dark);
+            background: var(--primary);
             color: white;
             text-align: center;
             padding: 30px 0;
@@ -488,6 +666,16 @@
         }
         
         /* Responsive Styles */
+        @media (max-width: 992px) {
+            .header-content h1 {
+                font-size: 2.8rem;
+            }
+            
+            .header-content p {
+                font-size: 1.2rem;
+            }
+        }
+
         @media (max-width: 768px) {
             .header-content h1 {
                 font-size: 2.2rem;
@@ -521,10 +709,96 @@
                 text-align: left !important;
                 margin-bottom: 10px;
             }
+
+            .back-to-top, 
+            .dark-mode-toggle,
+            .pdf-btn {
+                right: 15px;
+            }
+
+            .back-to-top {
+                bottom: 15px;
+            }
+
+            .dark-mode-toggle {
+                bottom: 75px;
+            }
+
+            .pdf-btn {
+                bottom: 135px;
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-content h1 {
+                font-size: 1.8rem;
+            }
+
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Touch Optimizations */
+        @media (hover: none) {
+            .project-card:hover {
+                transform: none;
+            }
+
+            .project-links a:hover {
+                color: var(--primary);
+            }
+
+            .submit-btn:hover {
+                background: var(--primary);
+                transform: none;
+                box-shadow: none;
+            }
         }
     </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "David Fouad",
+      "jobTitle": "Social Media Strategist",
+      "url": "https://yourportfolio.com",
+      "sameAs": [
+        "https://facebook.com/d9fou",
+        "https://instagram.com/d9fou"
+      ]
+    }
+    </script>
 </head>
 <body>
+    <!-- Progress Bar -->
+    <div class="progress-bar"></div>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <button class="dark-mode-toggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- PDF Download Button -->
+    <a href="portfolio.pdf" download class="pdf-btn">
+        <i class="fas fa-file-pdf"></i> Download CV
+    </a>
+
     <!-- Header Section -->
     <header>
         <div class="container">
@@ -551,6 +825,30 @@
         </div>
     </section>
 
+    <!-- Stats Section -->
+    <section id="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" data-target="150">0</div>
+                    <div class="stat-label">Campaigns Managed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="40">0</div>
+                    <div class="stat-label">Clients Served</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="500">0</div>
+                    <div class="stat-label">Content Pieces</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="12">0</div>
+                    <div class="stat-label">Team Members</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Projects Section -->
     <section id="projects">
         <div class="container">
@@ -560,7 +858,7 @@
             <div class="projects-grid">
                 <!-- Project 1 -->
                 <div class="project-card">
-                    <img src="project1.jpg" alt="Talabatey App Campaign" class="project-img">
+                    <img src="project1.jpg" alt="Talabatey App Campaign" class="project-img" loading="lazy">
                     <div class="project-info">
                         <h3>Talabatey App Marketing</h3>
                         <div class="project-tags">
@@ -568,7 +866,7 @@
                             <span class="tag">Campaign Strategy</span>
                             <span class="tag">Team Leadership</span>
                         </div>
-                        <p>Led a 12-member team to manage all Facebook & Instafram pages of the application, developed marketing strategies, and coordinated with influencers for promotional campaigns.</p>
+                        <p>Led a 12-member team to manage all Facebook & Instagram pages of the application, developed marketing strategies, and coordinated with influencers for promotional campaigns.</p>
                         <div class="project-links">
                             <a href="https://www.instagram.com/talabatey_iraq"><i class="fas fa-external-link-alt"></i> Client Page</a>
                             <a href="#"><i class="fas fa-project-diagram"></i> Project</a>
@@ -578,7 +876,7 @@
                 
                 <!-- Project 2 -->
                 <div class="project-card">
-                    <img src="project2.jpg" alt="The Studio Social Media" class="project-img">
+                    <img src="project2.jpg" alt="The Studio Social Media" class="project-img" loading="lazy">
                     <div class="project-info">
                         <h3>The Studio Social Media</h3>
                         <div class="project-tags">
@@ -597,7 +895,7 @@
                 
                 <!-- Project 3 -->
                 <div class="project-card">
-                    <img src="project3.jpg" alt="Al-Mubdaa Marketing" class="project-img">
+                    <img src="project3.jpg" alt="Al-Mubdaa Marketing" class="project-img" loading="lazy">
                     <div class="project-info">
                         <h3>Al-Mubdaa Scientific Bureau</h3>
                         <div class="project-tags">
@@ -654,6 +952,41 @@
                         <li>AI Tools</li>
                     </ul>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Client Testimonials</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <p>"David revolutionized our social media presence with his innovative strategies! Our engagement increased by 300% in just 3 months."</p>
+                    <h4>- Talabatey CEO</h4>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Working with David was a game-changer for our brand. His content ideas are fresh and perfectly aligned with our vision."</p>
+                    <h4>- The Studio Director</h4>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Professional, creative, and results-driven. David delivered beyond our expectations on every campaign."</p>
+                    <h4>- Al-Mubdaa Marketing Head</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instagram Feed -->
+    <section id="instagram">
+        <div class="container">
+            <div class="section-title">
+                <h2>Recent Work</h2>
+            </div>
+            <div class="instagram-feed" id="instagram-feed">
+                <!-- Instagram posts will be loaded here via JS -->
             </div>
         </div>
     </section>
@@ -754,7 +1087,7 @@
                 <div class="contact-form">
                     <form action="https://formsubmit.co/davidfouad94@gmail.com" method="POST">
                         <input type="hidden" name="_captcha" value="false">
-                        <input type="hidden" name="_next" value="thankyou">
+                        <input type="hidden" name="_next" value="https://yourportfolio.com/thankyou.html">
                         <div class="form-group">
                             <label for="name">Name</label>
                             <input type="text" id="name" name="name" required>
@@ -778,15 +1111,88 @@
     <footer>
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2023 David Fouad. All rights reserved.</p>
+                <p>&copy; <span id="year"></span> David Fouad. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Simple animation for project cards when they come into view
+        // GSAP Animations
+        gsap.from("header", {duration: 1, y: -50, opacity: 0});
+        gsap.from(".section-title", {duration: 0.8, y: 30, opacity: 0, stagger: 0.2});
+        gsap.from(".project-card", {duration: 1, y: 50, opacity: 0, stagger: 0.1, ease: "back.out(1.7)"});
+
+        // Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.querySelector('.progress-bar').style.width = scrolled + '%';
+        });
+
+        // Back to Top Button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('active');
+            } else {
+                backToTop.classList.remove('active');
+            }
+        });
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        });
+
+        // Dark Mode Toggle
+        const darkModeToggle = document.querySelector('.dark-mode-toggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = darkModeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Animated Stats Counter
+        const stats = document.querySelectorAll('.stat-number');
+        stats.forEach(stat => {
+            const target = +stat.getAttribute('data-target');
+            const increment = target / 100;
+            let current = 0;
+            const timer = setInterval(() => {
+                current += increment;
+                stat.textContent = Math.floor(current);
+                if (current >= target) clearInterval(timer);
+            }, 10);
+        });
+
+        // Form Validation
+        document.querySelector('form').addEventListener('submit', (e) => {
+            const email = document.getElementById('email').value;
+            if (!email.includes('@')) {
+                e.preventDefault();
+                alert('Please enter a valid email address');
+            }
+        });
+
+        // Current Year in Footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Instagram Feed (requires access token)
+        const feed = new Instafeed({
+            accessToken: 'YOUR_INSTAGRAM_ACCESS_TOKEN',
+            target: 'instagram-feed',
+            limit: 6,
+            template: '<a href="{{link}}" target="_blank"><img src="{{image}}" loading="lazy" alt="Instagram post"></a>'
+        });
+        feed.run();
+
+        // Intersection Observer for Project Cards
         const projectCards = document.querySelectorAll('.project-card');
-        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -802,6 +1208,11 @@
             card.style.transition = 'all 0.6s ease';
             observer.observe(card);
         });
+
+        // Touch Device Optimizations
+        if ('ontouchstart' in window || navigator.maxTouchPoints) {
+            document.body.classList.add('touch-device');
+        }
     </script>
 </body>
 </html>
